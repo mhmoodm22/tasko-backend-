@@ -13,6 +13,7 @@ import java.util.List;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -173,19 +174,27 @@ public class UserServiceImpl implements UserService {
 	                inputStream.read(data);
 
 	                // Convert the byte array to a string
-	                String blobData = new String(data);
+	               // String blobData = new String(data);
+	                
+	                IOUtils.readFully(inputStream, data, 0, 0);
 	                
 	                
 	         
 	                // Print the Blob data to the console
 	  
 	                java.sql.Blob blob = new SerialBlob(data);
-	               // System.out.println(blob.getBinaryStream().readAllBytes());
-	                userDto.setImges(blobData);
+	                System.out.println(data);
+	                
+	                byte[] data2 = blob.getBinaryStream().readAllBytes();
+	                System.out.println(data2);
+	                System.out.println(data.length);
+	                
+	                java.sql.Blob blob2 = new SerialBlob(data);
+	                userDto.setImg(blob2);
 
 	                // Close the input stream
 	                inputStream.close();
-					//System.out.println(inputStream.toString());
+					System.out.println(inputStream.toString());
 				} catch (SQLException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
