@@ -13,6 +13,7 @@ import java.util.List;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -45,7 +46,12 @@ public class UserServiceImpl implements UserService {
 
 		String publicUserId = utils.generateUserId(30);
 		userEntity.setUserId(publicUserId);
-		userEntity.setEarnedPoint(00);
+		userEntity.setEarnedPoint(00);//total earned point
+		userEntity.setCurrentLabel("Label 0");//current level
+		userEntity.setCurrentPoint(00);//show the point earened on current level
+		userEntity.setNextLabelPoint(100);//point required to earn next level
+		userEntity.setLabelIndex(0);//current label
+
 
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 
@@ -145,47 +151,54 @@ public class UserServiceImpl implements UserService {
 
 			UserDto userDto = new UserDto();
 
-//			try {
-//
-//				StringBuffer fileData = new StringBuffer();
-//				BufferedReader reader = new BufferedReader(new FileReader(
-//						"C:\\Users\\bdCalling\\Pictures\\Screenshots\\Screenshot 2024-03-15 103816.png"));
-//				char[] buf = new char[1024];
-//				int numRead = 0;
-//				while ((numRead = reader.read(buf)) != -1) {
-//					String readData = String.valueOf(buf, 0, numRead);
-//					fileData.append(readData);
-//					buf = new char[1024];
-//				}
-//				reader.close();
-//
-//				System.out.println(fileData.toString());
-//
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
+			// try {
+			//
+			// StringBuffer fileData = new StringBuffer();
+			// BufferedReader reader = new BufferedReader(new FileReader(
+			// "C:\\Users\\bdCalling\\Pictures\\Screenshots\\Screenshot 2024-03-15
+			// 103816.png"));
+			// char[] buf = new char[1024];
+			// int numRead = 0;
+			// while ((numRead = reader.read(buf)) != -1) {
+			// String readData = String.valueOf(buf, 0, numRead);
+			// fileData.append(readData);
+			// buf = new char[1024];
+			// }
+			// reader.close();
+			//
+			// System.out.println(fileData.toString());
+			//
+			// } catch (Exception e) {
+			// // TODO: handle exception
+			// }
 			if (user.getImg() != null) {
 				try {
 					InputStream inputStream = user.getImg().getBinaryStream();
-					
-				     // Read the data into a byte array
-	                byte[] data = new byte[(int) user.getImg().length()];
-	                inputStream.read(data);
 
-	                // Convert the byte array to a string
-	                String blobData = new String(data);
-	                
-	                
-	         
-	                // Print the Blob data to the console
-	  
-	                java.sql.Blob blob = new SerialBlob(data);
-	                System.out.println(blob.getBinaryStream().readAllBytes());
-	                userDto.setImges(blobData);
+					// Read the data into a byte array
+					byte[] data = new byte[(int) user.getImg().length()];
+					inputStream.read(data);
 
-	                // Close the input stream
-	                inputStream.close();
-					//System.out.println(inputStream.toString());
+					// Convert the byte array to a string
+					// String blobData = new String(data);
+
+					IOUtils.readFully(inputStream, data, 0, 0);
+
+					// Print the Blob data to the console
+
+					java.sql.Blob blob = new SerialBlob(data);
+					System.out.println(data);
+
+					// byte[] data2 = blob.getBinaryStream().read();
+					// System.out.println(data2);
+					// System.out.println(data.length);
+
+					java.sql.Blob blob2 = new SerialBlob(data);
+					userDto.setImg(blob2);
+
+					// Close the input stream
+					inputStream.close();
+					System.out.println(inputStream.toString());
 				} catch (SQLException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

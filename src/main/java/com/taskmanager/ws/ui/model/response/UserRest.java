@@ -1,11 +1,14 @@
 package com.taskmanager.ws.ui.model.response;
 
+import javax.persistence.Lob;
+
 public class UserRest {
 
 	private String userId;
 	private String userName;
 	private String email;
-	private java.sql.Blob img;
+
+	byte[] img;
 	private String image;
 	private Integer earnedPoint;
 	private String currentLabel;
@@ -87,13 +90,15 @@ public class UserRest {
 		this.earnedPoint = earnedPoint;
 	}
 
-	public java.sql.Blob getImg() {
+	public byte[] getImg() {
 		return img;
 	}
 
-	public void setImg(java.sql.Blob img) {
+	public void setImg(byte[] img) {
 		this.img = img;
 	}
+
+
 	
 	
 

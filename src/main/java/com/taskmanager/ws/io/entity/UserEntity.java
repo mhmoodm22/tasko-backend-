@@ -19,6 +19,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 public class UserEntity implements Serializable {
@@ -157,6 +159,7 @@ public class UserEntity implements Serializable {
 		this.updateUser = updateUser;
 	}
 
+	@JsonIgnore
 	public java.sql.Blob getImg() {
 		return img;
 	}
