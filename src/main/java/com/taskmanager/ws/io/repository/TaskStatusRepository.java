@@ -14,7 +14,7 @@ import com.taskmanager.ws.io.entity.TaskStatusEntity;
 public interface TaskStatusRepository extends CrudRepository<TaskStatusEntity, Long> {
 	
 	
-	List<TaskStatusEntity> findAll();
+	//List<TaskStatusEntity> findAll();
 
 
 }

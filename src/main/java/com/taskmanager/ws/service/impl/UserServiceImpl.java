@@ -175,16 +175,9 @@ public class UserServiceImpl implements UserService {
 				try {
 					InputStream inputStream = user.getImg().getBinaryStream();
 
-	                // Convert the byte array to a string
-	                String blobData = new String(data);
-	                
-	                
-	         
-	                // Print the Blob data to the console
-	  
-	                java.sql.Blob blob = new SerialBlob(data);
-	               // System.out.println(blob.getBinaryStream().readAllBytes());
-	                userDto.setImges(blobData);
+					// Read the data into a byte array
+					byte[] data = new byte[(int) user.getImg().length()];
+					inputStream.read(data);
 
 					// Convert the byte array to a string
 					// String blobData = new String(data);
