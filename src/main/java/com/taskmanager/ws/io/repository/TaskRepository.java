@@ -17,5 +17,6 @@ public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
 	List<TaskEntity> findAllByCategoryAndUserId(String catName,String userID);
 	List<TaskEntity> findAllByStatusAndUserId(String status,String userID);
 	TaskEntity findByTaskId(String taskId);
+	
 
 }

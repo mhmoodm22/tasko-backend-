@@ -1,6 +1,7 @@
 package com.taskmanager.ws.ui.model.request;
 
 import java.util.Date;
+import java.util.List;
 
 public class TaskRequestModel {
 	
@@ -8,10 +9,16 @@ public class TaskRequestModel {
 	private String title;
 	private String description;
 	private Date date;
-
+	private List<String> collaboratorsId;
 	private String category;
 	
 	
+	public List<String> getCollaboratorsId() {
+		return collaboratorsId;
+	}
+	public void setCollaboratorsId(List<String> collaboratorsId) {
+		this.collaboratorsId = collaboratorsId;
+	}
 	public String getUserId() {
 		return userId;
 	}

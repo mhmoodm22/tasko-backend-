@@ -30,9 +30,11 @@ import javax.management.RuntimeErrorException;
 import javax.sql.rowset.serial.SerialBlob;
 
 import com.taskmanager.ws.io.entity.UserEntity;
+import com.taskmanager.ws.io.repository.UserRepository;
 import com.taskmanager.ws.service.UserService;
 import com.taskmanager.ws.shared.dto.UserDto;
 import com.taskmanager.ws.ui.model.request.UserDetailsRequestModel;
+import com.taskmanager.ws.ui.model.response.FriendRest;
 import com.taskmanager.ws.ui.model.response.UserRest;
 
 @RestController
@@ -41,6 +43,10 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
+	
+	
+	@Autowired
+	UserRepository userRepository;
 
 	@GetMapping()
 	public UserRest getUser(@RequestParam("id") String id) {
@@ -52,69 +58,9 @@ public class UserController {
 		return returnValue;
 
 	}
+	
 
-	@GetMapping(path = "/suggestion")
-	public List<UserRest> getFriendSuggestion(@RequestParam("id") String id) {
-		List<UserRest> returnValue = new ArrayList<>();
 
-		List<UserDto> users = userService.getAllUser(id);
-
-		for (UserDto user : users) {
-
-			UserRest userRest = new UserRest();
-
-			if (user.getImg() != null) {
-				try {
-					InputStream inputStream = user.getImg().getBinaryStream();
-
-					// Read the data into a byte array
-					byte[] data = new byte[(int) user.getImg().length()];
-					inputStream.read(data);
-
-					// Convert the byte array to a string
-					String blobData = new String(data);
-
-					// InputStream in = getClass()
-					// .getResourceAsStream("/com/baeldung/produceimage/image.jpg");
-					// return IOUtils.toByteArray(in);
-
-					// ByteArrayResource resource = new
-					// ByteArrayResource(inputStream.readAllBytes());
-
-					// IOUtils.toByteArray();
-
-					// byte[] b = inputStream.readAllBytes();
-
-					// userRest.setImg(b);
-
-					// Print the Blob data to the console
-
-					java.sql.Blob blob = new SerialBlob(data);
-					// System.out.println(blob.getBinaryStream().readAllBytes());
-					// System.out.println(b.length);
-					// userRest.setImg(blob);
-
-					// Close the input stream
-					inputStream.close();
-
-					// System.out.println(inputStream.toString());
-				} catch (SQLException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			userRest.setUserId(user.getUserId());
-			userRest.setImage(user.getImges());
-			userRest.setUserName(user.getUserName());
-			userRest.setCurrentLabel(user.getCurrentLabel());
-
-			returnValue.add(userRest);
-		}
-
-		return returnValue;
-
-	}
 
 	@PostMapping
 	public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {

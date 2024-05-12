@@ -9,7 +9,7 @@ public class UserRest {
 	private String email;
 
 	byte[] img;
-	private String image;
+
 	private Integer earnedPoint;
 	private String currentLabel;
 	private int labelIndex;
@@ -17,14 +17,7 @@ public class UserRest {
 	private int nextLabelPoint;
 
 	
-	
-	public String getImage() {
-		return image;
-	}
 
-	public void setImage(String image) {
-		this.image = image;
-	}
 
 	public String getCurrentLabel() {
 		return currentLabel;

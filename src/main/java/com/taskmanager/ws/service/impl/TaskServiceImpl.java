@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.taskmanager.ws.io.entity.CollaboratorEntity;
 import com.taskmanager.ws.io.entity.LevelEntity;
 import com.taskmanager.ws.io.entity.TaskEntity;
 import com.taskmanager.ws.io.entity.UserEntity;
@@ -15,6 +16,7 @@ import com.taskmanager.ws.io.repository.TaskRepository;
 import com.taskmanager.ws.io.repository.UserRepository;
 import com.taskmanager.ws.service.TaskService;
 import com.taskmanager.ws.shared.Utils;
+import com.taskmanager.ws.shared.dto.CollaboratorDto;
 import com.taskmanager.ws.shared.dto.TaskDto;
 import com.taskmanager.ws.shared.dto.UserDto;
 
@@ -56,6 +58,7 @@ public class TaskServiceImpl implements TaskService {
 		List<TaskDto> taskDtos = new ArrayList<>();
 
 		for (TaskEntity entity : allTask) {
+
 			TaskDto taskdto = new TaskDto();
 			BeanUtils.copyProperties(entity, taskdto);
 
@@ -89,13 +92,54 @@ public class TaskServiceImpl implements TaskService {
 		BeanUtils.copyProperties(task, taskEntity);
 
 		String taskId = utils.generateUserId(30);
-		taskEntity.setPoint(20);
+		int point = utils.generatePoint();
+		taskEntity.setPoint(point);
 		taskEntity.setTaskId(taskId);
 		taskEntity.setIsCollaborated(0);
 		taskEntity.setStatus("Pending");
+
+		List<CollaboratorEntity> collaboratorEntitys = new ArrayList<>();
+
+		if (!task.getCollaboratorDto().isEmpty()) {
+			taskEntity.setIsCollaborated(1);
+			task.getCollaboratorDto().forEach(t -> {
+				CollaboratorEntity collaboratorEntity = new CollaboratorEntity();
+
+				collaboratorEntity.setTaskEntity(taskEntity);
+				collaboratorEntity.setStatus(0);
+				collaboratorEntity.setUserId(task.getUserId());
+				collaboratorEntity.setFriendId(t.getFriendId());
+				collaboratorEntitys.add(collaboratorEntity);
+			});
+		}
+
+		taskEntity.setCollaboratorEntitys(collaboratorEntitys);
 		TaskEntity storedUserDetails = taskRepository.save(taskEntity);
+
 		TaskDto returnValue = new TaskDto();
+
 		BeanUtils.copyProperties(storedUserDetails, returnValue);
+
+		List<CollaboratorEntity> collaboratorEntities = storedUserDetails.getCollaboratorEntitys();
+
+		List<CollaboratorDto> CollaboratorDtos = new ArrayList<>();
+
+		collaboratorEntities.forEach(t -> {
+			CollaboratorDto dto = new CollaboratorDto();
+
+			UserEntity userEntity = userRepository.findByUserId(t.getFriendId());
+
+			dto.setStatus(t.getStatus());
+			dto.setFriendId(t.getFriendId());
+			dto.setUserId(t.getUserId());
+			dto.setImg(userEntity.getImg());
+
+			CollaboratorDtos.add(dto);
+
+		});
+
+		returnValue.setCollaboratorDto(CollaboratorDtos);
+
 		return returnValue;
 
 	}
@@ -120,7 +164,7 @@ public class TaskServiceImpl implements TaskService {
 		BeanUtils.copyProperties(saveEntity, returnValue);
 
 		UserEntity userEntity = userRepository.findByUserId(userID);
-		
+
 		String done = "Done";
 
 		if (status.trim().equals(done)) {
@@ -160,4 +204,36 @@ public class TaskServiceImpl implements TaskService {
 		return taskDtos;
 	}
 
+	@Override
+	public TaskDto deleteTask(String taskID) {
+		TaskDto returnValue = new TaskDto();
+		TaskEntity entity = taskRepository.findByTaskId(taskID);
+
+		try {
+			if (entity != null) {
+				taskRepository.delete(entity);
+				BeanUtils.copyProperties(entity, returnValue);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Delete operation Failed");
+		}
+
+		return returnValue;
+	}
+
+	@Override
+	public TaskDto getTask(String taskID) {
+		TaskDto returnValue = new TaskDto();
+		TaskEntity entity = taskRepository.findByTaskId(taskID);
+
+		try {
+			if (entity != null) {
+				BeanUtils.copyProperties(entity, returnValue);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Task Not Found");
+		}
+
+		return returnValue;
+	}
 }

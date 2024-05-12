@@ -3,12 +3,16 @@ package com.taskmanager.ws.io.entity;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -54,11 +58,21 @@ public class TaskEntity implements Serializable {
 	@Column(name = "status", nullable = false)
 	private String status;
 	
-//	@Column(name = "collaborator")
-//	private Json earnedPoint;
-	
 
 	
+	
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "taskEntity", cascade = CascadeType.ALL)
+    private List<CollaboratorEntity> CollaboratorEntitys;
+
+		
+	public List<CollaboratorEntity> getCollaboratorEntitys() {
+		return CollaboratorEntitys;
+	}
+
+	public void setCollaboratorEntitys(List<CollaboratorEntity> collaboratorEntitys) {
+		CollaboratorEntitys = collaboratorEntitys;
+	}
+
 	@Column(nullable = false)
 	private String category;
 	

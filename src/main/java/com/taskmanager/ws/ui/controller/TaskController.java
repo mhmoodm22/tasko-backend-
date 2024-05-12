@@ -7,7 +7,9 @@ import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,13 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.taskmanager.ws.io.entity.CollaboratorEntity;
 import com.taskmanager.ws.io.entity.TaskEntity;
 import com.taskmanager.ws.service.TaskService;
 import com.taskmanager.ws.service.UserService;
+import com.taskmanager.ws.shared.dto.CollaboratorDto;
 import com.taskmanager.ws.shared.dto.TaskDto;
 import com.taskmanager.ws.shared.dto.UserDto;
 import com.taskmanager.ws.ui.model.request.TaskRequestModel;
 import com.taskmanager.ws.ui.model.request.UserDetailsRequestModel;
+import com.taskmanager.ws.ui.model.response.CollaboratorRest;
 import com.taskmanager.ws.ui.model.response.TaskRest;
 import com.taskmanager.ws.ui.model.response.UserRest;
 
@@ -45,28 +50,62 @@ public class TaskController {
 		TaskDto taskDto = new TaskDto();
 
 		BeanUtils.copyProperties(taskDetail, taskDto);
+		
+		List<CollaboratorDto> collaboratorsDto = new ArrayList<>();
+		
+		if(!taskDetail.getCollaboratorsId().isEmpty()) {
+			
+			taskDetail.getCollaboratorsId().forEach(t ->{
+				CollaboratorDto dto = new CollaboratorDto();
+				
+				dto.setFriendId(t);
+				collaboratorsDto.add(dto);
+			
+			} );
+		}
+		
+		taskDto.setCollaboratorDto(collaboratorsDto);
 
 		TaskDto createTask = taskService.createTask(taskDto);
+
 		BeanUtils.copyProperties(createTask, returnValue);
+
+		List<CollaboratorDto> CollaboratorDtos = createTask.getCollaboratorDto();
+
+		List<CollaboratorRest> collaboratorRest = new ArrayList<>();
+
+		CollaboratorDtos.forEach(t -> {
+			CollaboratorRest rest = new CollaboratorRest();
+
+			rest.setStatus(t.getStatus());
+			rest.setFriendId(t.getFriendId());
+			rest.setUserId(t.getUserId());
+			rest.setImg(t.getImg());
+
+			collaboratorRest.add(rest);
+
+		});
+
+		returnValue.setCollaboators(collaboratorRest);
 
 		return returnValue;
 	}
-	
-	
+
 	@PutMapping("/updateStatus")
-	public TaskRest updateTaskStatus(@RequestParam("taskID") String taskID,
-			@RequestParam("status") String status,@RequestParam("userID") String userID) {
+	public TaskRest updateTaskStatus(@RequestParam("taskID") String taskID, @RequestParam("status") String status,
+			@RequestParam("userID") String userID) {
 
 		TaskRest returnValue = new TaskRest();
 
-		TaskDto createTask = taskService.changeTaskStatus(taskID, status,userID);
+		TaskDto createTask = taskService.changeTaskStatus(taskID, status, userID);
 		BeanUtils.copyProperties(createTask, returnValue);
 
 		return returnValue;
 	}
 
 	@GetMapping("/category")
-	public List<TaskRest> getTaskListByCategory(@RequestParam("category") String category,@RequestParam("userID") String userID) {
+	public List<TaskRest> getTaskListByCategory(@RequestParam("category") String category,
+			@RequestParam("userID") String userID) {
 
 		List<TaskRest> returnValue = new ArrayList<>();
 
@@ -81,14 +120,14 @@ public class TaskController {
 
 		return returnValue;
 	}
-	
-	
+
 	@GetMapping("/status")
-	public List<TaskRest> getTaskListByStatus(@RequestParam("status") String status,@RequestParam("userID") String userID) {
+	public List<TaskRest> getTaskListByStatus(@RequestParam("status") String status,
+			@RequestParam("userID") String userID) {
 
 		List<TaskRest> returnValue = new ArrayList<>();
 
-		List<TaskDto> taskList = taskService.getAllTaskByStatus(userID, userID);
+		List<TaskDto> taskList = taskService.getAllTaskByStatus(status, userID);
 
 		for (TaskDto dto : taskList) {
 			TaskRest taskrest = new TaskRest();
@@ -99,8 +138,7 @@ public class TaskController {
 
 		return returnValue;
 	}
-	
-	
+
 	@GetMapping
 	public List<TaskRest> getTaskList(@RequestParam("userID") String userID) {
 
@@ -117,8 +155,7 @@ public class TaskController {
 
 		return returnValue;
 	}
-	
-	
+
 	@GetMapping("/collaborated")
 	public List<TaskRest> getCollaboratedTaskList(@RequestParam("userID") String userID) {
 
@@ -132,6 +169,28 @@ public class TaskController {
 
 			returnValue.add(taskrest);
 		}
+
+		return returnValue;
+	}
+
+	@DeleteMapping("/deleteTask")
+	public TaskRest deleteTask(@RequestParam("taskID") String taskID) {
+
+		TaskRest returnValue = new TaskRest();
+
+		TaskDto createTask = taskService.deleteTask(taskID);
+		BeanUtils.copyProperties(createTask, returnValue);
+
+		return returnValue;
+	}
+
+	@GetMapping("/getTaskDetail")
+	public TaskRest getTaskDetail(@RequestParam("taskID") String taskID) {
+
+		TaskRest returnValue = new TaskRest();
+
+		TaskDto createTask = taskService.getTask(taskID);
+		BeanUtils.copyProperties(createTask, returnValue);
 
 		return returnValue;
 	}

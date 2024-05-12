@@ -2,6 +2,7 @@ package com.taskmanager.ws.shared.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Temporal;
@@ -20,6 +21,9 @@ public class TaskDto implements Serializable {
 	private String category;
 	private int point;
 	private int isCollaborated;
+	private List<CollaboratorDto> collaboratorDto;
+	
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -73,6 +77,12 @@ public class TaskDto implements Serializable {
 	}
 	public void setIsCollaborated(int isCollaborated) {
 		this.isCollaborated = isCollaborated;
+	}
+	public List<CollaboratorDto> getCollaboratorDto() {
+		return collaboratorDto;
+	}
+	public void setCollaboratorDto(List<CollaboratorDto> collaboratorDto) {
+		this.collaboratorDto = collaboratorDto;
 	}
 	
 	

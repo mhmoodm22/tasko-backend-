@@ -13,15 +13,8 @@ public class UserDto implements Serializable {
 	private String userName;
 	private String email;
 	private String password;
-	private java.sql.Blob img;
-	private String imges;
-	public String getImges() {
-		return imges;
-	}
+	private byte[] img;
 
-	public void setImges(String imges) {
-		this.imges = imges;
-	}
 
 	private Integer earnedPoint;
 	private String currentLabel;
@@ -102,11 +95,13 @@ public class UserDto implements Serializable {
 		this.password = password;
 	}
 
-	public java.sql.Blob getImg() {
+
+
+	public byte[] getImg() {
 		return img;
 	}
 
-	public void setImg(java.sql.Blob img) {
+	public void setImg(byte[] img) {
 		this.img = img;
 	}
 

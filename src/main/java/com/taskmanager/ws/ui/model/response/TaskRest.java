@@ -1,6 +1,7 @@
 package com.taskmanager.ws.ui.model.response;
 
 import java.util.Date;
+import java.util.List;
 
 public class TaskRest {
 	private String taskId;
@@ -10,6 +11,15 @@ public class TaskRest {
 	private String status;
 	private String category;
 	private int point;
+	
+	private List<CollaboratorRest> collaboators;
+	
+	public List<CollaboratorRest> getCollaboators() {
+		return collaboators;
+	}
+	public void setCollaboators(List<CollaboratorRest> collaboators) {
+		this.collaboators = collaboators;
+	}
 	private int isCollaborated;
 	public String getTaskId() {
 		return taskId;

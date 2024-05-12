@@ -44,7 +44,7 @@ public class UserEntity implements Serializable {
 
 	@Column(name = "image")
 	@Lob
-	private java.sql.Blob img;
+	private byte[] img;
 
 	@Column(name = "earnedPoint")
 	private Integer earnedPoint;
@@ -159,12 +159,11 @@ public class UserEntity implements Serializable {
 		this.updateUser = updateUser;
 	}
 
-	@JsonIgnore
-	public java.sql.Blob getImg() {
+	public byte[] getImg() {
 		return img;
 	}
 
-	public void setImg(java.sql.Blob img) {
+	public void setImg(byte[] img) {
 		this.img = img;
 	}
 
